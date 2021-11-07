@@ -1,4 +1,4 @@
-export interface song {
+export interface ISong {
   title: string;
   url: string;
 }
