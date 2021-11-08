@@ -10,6 +10,12 @@ export default {
 };
 
 function command(message: Message, args: string[], {queue, player}: global) {
+  if (!message.member?.voice.channel) {
+    message.channel
+      .send(`Mas tu n ta nem num chat de voz doido!`)
+      .then(message => setTimeout(() => message.delete(), 5000));
+  }
+
   player.stop();
-  message.reply('Skiped!');
+  message.react('🆗');
 }

@@ -25,9 +25,12 @@ async function command(
   {queue, player}: global
 ) {
   if (!args.length) {
-    message.reply(
-      'Tenho 2 bola e nenhuma é de cristal, fala ai o nome da musica arrombado'
-    );
+    message
+      .reply(
+        'Tenho 2 bola e nenhuma é de cristal, fala ai o nome da musica arrombado'
+      )
+      .then(message => setTimeout(() => message.delete(), 5000));
+    message.reply('❌');
     return;
   }
   const voiceChannel = message.member?.voice.channel as VoiceChannel;
@@ -63,12 +66,21 @@ async function command(
       } catch (error) {
         console.error('Error:', error);
       }
+
+      message.react('🆗').catch(console.error);
     } else {
-      void message.channel.send('Entra no chat de voz ai corno!');
+      message.react('❌').catch(console.error);
+      message.channel
+        .send('Entra no chat de voz ai corno!')
+        .then(message => setTimeout(() => message.delete(), 5000));
     }
   } else {
     server_queue!.songs.push(song!);
-    message.channel.send(`👍 **${song!.title}** adicionada a fila!`);
+    console.log(`Music ${song!.title} was added to the queue`);
+    message.react('🆗').catch(console.error);
+    message.channel
+      .send(`👍 **${song!.title}** Adicionada a fila!`)
+      .then(message => setTimeout(() => message.delete(), 5000));
     return;
   }
 }
@@ -93,7 +105,9 @@ export async function getVideo(message: Message, args: string[]) {
         url: video.url,
       };
     } else {
-      message.reply('Achei não ow parça');
+      message
+        .reply('Achei não ow parça')
+        .then(message => setTimeout(() => message.delete(), 5000));
     }
   }
 }
@@ -133,7 +147,9 @@ export function musicPlayer(
 
   playTrack(songQueue.songs[0].url, songQueue.voiceChannel, player);
   player.on('stateChange', (oldState, newState) => {
-    console.log('player status: ', oldState.status, newState.status);
+    console.log(
+      `player status chaged from ${oldState.status} to ${newState.status}`
+    );
     if (oldState.status === 'playing' && newState.status === 'idle') {
       console.log('Finished playing the song');
       songQueue.songs.shift();
@@ -146,5 +162,8 @@ export function musicPlayer(
     player.stop();
   });
 
-  songQueue.textChannel.send(`🎶 Tocando agora **${song.title}**`);
+  songQueue.textChannel
+    .send(`🎶 Tocando agora **${song.title}**`)
+    .then(message => setTimeout(() => message.delete(), 5000))
+    .catch(error => console.error(error));
 }
