@@ -30,7 +30,7 @@ async function command(
         'Tenho 2 bola e nenhuma é de cristal, fala ai o nome da musica arrombado'
       )
       .then(message => setTimeout(() => message.delete(), 5000));
-    message.reply('❌');
+    message.react('❌');
     return;
   }
   const voiceChannel = message.member?.voice.channel as VoiceChannel;
