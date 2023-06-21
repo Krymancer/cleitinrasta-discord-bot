@@ -1,4 +1,4 @@
-import {Intents, Client} from 'discord.js';
+import {GatewayIntentBits , Client, Events} from 'discord.js';
 
 import {token} from './config.json';
 
@@ -7,18 +7,19 @@ import commands from './commands';
 const client = new Client({
   intents: [
     [
-      Intents.FLAGS.GUILDS,
-      Intents.FLAGS.GUILD_MESSAGES,
-      Intents.FLAGS.GUILD_VOICE_STATES,
+      GatewayIntentBits .Guilds,
+      GatewayIntentBits .GuildMessages,
+      GatewayIntentBits.MessageContent,
+      GatewayIntentBits .GuildVoiceStates,
     ],
   ],
 });
 
-client.on('ready', async () => {
+client.once(Events.ClientReady, async () => {
   console.log('Bot Ready!');
 });
 
-client.on('messageCreate', async message => {
+client.on(Events.MessageCreate, async message => {
   commands(message);
 });
 

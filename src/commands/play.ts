@@ -1,6 +1,6 @@
 import ytdl from 'ytdl-core';
 import yts from 'yt-search';
-import {Guild, Message, TextChannel, VoiceChannel} from 'discord.js';
+import {Guild, Message, TextChannel, VoiceBasedChannel, VoiceChannel} from 'discord.js';
 import {
   AudioPlayer,
   createAudioPlayer,
@@ -114,7 +114,7 @@ export async function getVideo(message: Message, args: string[]) {
 
 export function playTrack(
   url: string,
-  channel: VoiceChannel,
+  channel: VoiceBasedChannel,
   player: AudioPlayer
 ) {
   const stream = ytdl(url, {filter: 'audioonly'});
