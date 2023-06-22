@@ -1,5 +1,7 @@
 import {Message} from 'discord.js';
 import global from '../interfaces/global'
+import { AudioPlayerStatus } from '@discordjs/voice';
+import replyMessage from '../utils/replyMessage';
 
 export default {
   name: 'pause',
@@ -9,14 +11,13 @@ export default {
 };
 
 function command(message: Message, args: string[], {queue, player}: global) {
-  if( player.state.status === 'playing' ) {
+  if( player.state.status === AudioPlayerStatus.Playing ) {
     player.pause();
     message.react('⏸️');
-  } else if (player.state.status === 'paused') {
+  } else if (player.state.status === AudioPlayerStatus.Paused) {
     player.unpause();
     message.react('▶️');
   } else {
-    message.reply('Não tem nada tocando, seu arrombado!');
-    message.react('❌');
+    replyMessage(message, 'Não tem nada tocando, seu arrombado!', false);
   }
 }

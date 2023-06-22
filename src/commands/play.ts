@@ -1,17 +1,14 @@
-import ytdl from 'ytdl-core';
-import yts from 'yt-search';
-import {Guild, Message, VoiceBasedChannel, VoiceChannel} from 'discord.js';
+import {Guild, Message, VoiceChannel} from 'discord.js';
 import {
   AudioPlayer,
-  AudioPlayerStatus,
-  VoiceConnection,
-  createAudioResource,
-  joinVoiceChannel,
+  AudioPlayerStatus
 } from '@discordjs/voice';
 import {IQueueItem} from '../interfaces/queue';
 import {ISong} from '../interfaces/song';
 import global from '../interfaces/global';
-import queue from './queue';
+import getVideo from '../utils/getVideo';
+import playTrack from '../utils/playTrack';
+import replyMessage from '../utils/replyMessage';
 
 export default {
   name: 'play',
@@ -26,18 +23,17 @@ async function command(
   {queue, player}: global
 ) {
   if (!args.length) {
-    if (player.state.status === 'paused') {
+    if (player.state.status === AudioPlayerStatus.Paused) {
       player.unpause();
       message.react('▶️');
       return;
+    }else if (player.state.status === AudioPlayerStatus.Playing) {
+      player.pause();
+      message.react('⏸️');
+      return;
     }
 
-    message
-      .reply(
-        'Tenho 2 bola e nenhuma é de cristal, fala ai o nome da musica arrombado'
-      )
-      .then(message => setTimeout(() => message.delete(), 5000));
-    message.react('❌');
+    replyMessage(message, 'Tenho 2 bola e nenhuma é de cristal, fala ai o nome da musica arrombado', false);
     return;
   }
 
@@ -74,73 +70,15 @@ async function command(
       } catch (error) {
         console.error('Error:', error);
       }
-
-      message.react('🆗').catch(console.error);
+      message.react('✅').catch(console.error);
     } else {
-      message.react('❌').catch(console.error);
-      message.channel
-        .send('Entra no chat de voz ai corno!')
-        .then(message => setTimeout(() => message.delete(), 5000));
+      replyMessage(message, 'Entra no chat de voz ai corno! 😡', false);
     }
   } else {
     server_queue!.songs.push(song!);
-    console.log(`Music ${song!.title} was added to the queue`);
-    message.react('🆗').catch(console.error);
-    message.channel
-      .send(`👍 **${song!.title}** Adicionada a fila!`)
-      .then(message => setTimeout(() => message.delete(), 5000));
+    replyMessage(message, `👍 **${song!.title}** Adicionada a fila!`, true);
     return;
   }
-}
-
-export async function getVideo(message: Message, args: string[]) {
-  if (ytdl.validateURL(args[0])) {
-    const songInfo = await ytdl.getInfo(args[0]);
-    return {
-      title: songInfo.videoDetails.title,
-      url: songInfo.videoDetails.video_url,
-    };
-  } else {
-    const videoFinder = async (query: string) => {
-      const videoResult = await yts(query);
-      return videoResult.videos.length > 1 ? videoResult.videos[0] : null;
-    };
-
-    const video = await videoFinder(args.join(' '));
-    if (video) {
-      return {
-        title: video.title,
-        url: video.url,
-      };
-    } else {
-      message
-        .reply('Achei não ow parça')
-        .then(message => setTimeout(() => message.delete(), 5000));
-    }
-  }
-}
-
-export function playTrack(
-  url: string,
-  channel: VoiceBasedChannel,
-  player: AudioPlayer
-) : VoiceConnection {
-  const stream = ytdl(url, {filter: 'audioonly'});
-  const connection = joinVoiceChannel({
-    channelId: channel.id,
-    guildId: channel.guild.id,
-    adapterCreator: channel.guild.voiceAdapterCreator,
-  });
-  connection.subscribe(player);
-  const resource = createAudioResource(stream);
-
-  try {
-    player.play(resource);
-  } catch (error) {
-    console.log('Error: ', error);
-  }
-
-  return connection;
 }
 
 export function musicPlayer(
@@ -161,7 +99,7 @@ export function musicPlayer(
     console.log(
       `player status chaged from ${oldState.status} to ${newState.status}`
     );
-    if (oldState.status === 'playing' && newState.status === 'idle') {
+    if (oldState.status === AudioPlayerStatus.Playing && newState.status === AudioPlayerStatus.Idle) {
       console.log('Finished playing the song');
       songQueue.songs.shift();
       musicPlayer(guild, songQueue.songs[0], songQueue, player, queue);

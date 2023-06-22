@@ -9,6 +9,7 @@ import pause from './pause';
 import queueCmd from './queue';
 import leave from './leave';
 import {createAudioPlayer} from '@discordjs/voice';
+import replyMessage from '../utils/replyMessage';
 
 const queue = new Map<string, IQueueItem>();
 const player = createAudioPlayer();
@@ -20,8 +21,18 @@ const global = {
   player,
 };
 
+function isRollingAJoint() : boolean {
+  const randomNumber = Math.random();
+  return randomNumber < 0.1;
+}
+
 export default (message: Message) => {
   if (message.author.bot || !message.content.startsWith(prefix)) return;
+
+  if(isRollingAJoint()) {
+    replyMessage(message, 'Foi mal, to bolando um, já volto! 🍁', false);
+    return;
+  }
 
   const args = message.content.slice(prefix.length).split(/ +/);
   const command = args.shift()!.toLowerCase();

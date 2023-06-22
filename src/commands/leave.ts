@@ -1,18 +1,17 @@
 import {Message} from 'discord.js';
 import global from '../interfaces/global'
+import replyMessage from '../utils/replyMessage';
 
 export default {
   name: 'leave',
   description: 'Leave voice channel',
-  aliases: [''],
+  aliases: ['l'],
   run: command,
 };
 
 function command(message: Message, args: string[], {queue, player}: global) {
   if (!message.member?.voice.channel) {
-    message.channel
-      .send(`Mas tu n ta nem num chat de voz doido!`)
-      .then(message => setTimeout(() => message.delete(), 5000));
+      replyMessage(message, 'Mas tu n ta nem num chat de voz doido!', false);
       return;
   }
 
@@ -20,20 +19,15 @@ function command(message: Message, args: string[], {queue, player}: global) {
 
   if (server_queue) {
     if (!server_queue.connection) {
-      message.channel
-      .send(`Mas eu não to num canal de voz doido!`)
-      .then(message => setTimeout(() => message.delete(), 5000));
+      replyMessage(message, 'Mas eu não to num canal de voz doido!', false);
+      return;
     }
 
     server_queue.connection?.disconnect();
     queue.delete(message.guild!.id);
-    message.channel
-    .send(`To dando o fora daqui taligado mermão!`)
-    .then(message => setTimeout(() => message.delete(), 5000));
-    message.react('🆗');
+    replyMessage(message, 'To dando o fora daqui taligado mermão!', true);
+    
   } else {
-    message.channel
-      .send(`Mas eu não to num canal de voz doido!`)
-      .then(message => setTimeout(() => message.delete(), 5000));
+    replyMessage(message, 'Mas eu não to num canal de voz doido!', false);
   }
 }
