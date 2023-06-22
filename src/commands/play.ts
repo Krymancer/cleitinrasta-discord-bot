@@ -1,9 +1,10 @@
 import ytdl from 'ytdl-core';
 import yts from 'yt-search';
-import {Guild, Message, TextChannel, VoiceBasedChannel, VoiceChannel} from 'discord.js';
+import {Guild, Message, VoiceBasedChannel, VoiceChannel} from 'discord.js';
 import {
   AudioPlayer,
-  createAudioPlayer,
+  AudioPlayerStatus,
+  VoiceConnection,
   createAudioResource,
   joinVoiceChannel,
 } from '@discordjs/voice';
@@ -25,6 +26,12 @@ async function command(
   {queue, player}: global
 ) {
   if (!args.length) {
+    if (player.state.status === 'paused') {
+      player.unpause();
+      message.react('▶️');
+      return;
+    }
+
     message
       .reply(
         'Tenho 2 bola e nenhuma é de cristal, fala ai o nome da musica arrombado'
@@ -33,6 +40,7 @@ async function command(
     message.react('❌');
     return;
   }
+
   const voiceChannel = message.member?.voice.channel as VoiceChannel;
   const textChannel = message.channel;
   const server_queue = queue.get(message.guild!.id);
@@ -55,7 +63,7 @@ async function command(
         if (!song.url) {
           return;
         }
-        playTrack(song.url, voiceChannel, player);
+        queueItem.connection = playTrack(song.url, voiceChannel, player);
         musicPlayer(
           message.guild,
           queueItem.songs[0],
@@ -116,7 +124,7 @@ export function playTrack(
   url: string,
   channel: VoiceBasedChannel,
   player: AudioPlayer
-) {
+) : VoiceConnection {
   const stream = ytdl(url, {filter: 'audioonly'});
   const connection = joinVoiceChannel({
     channelId: channel.id,
@@ -125,11 +133,14 @@ export function playTrack(
   });
   connection.subscribe(player);
   const resource = createAudioResource(stream);
+
   try {
     player.play(resource);
   } catch (error) {
     console.log('Error: ', error);
   }
+
+  return connection;
 }
 
 export function musicPlayer(

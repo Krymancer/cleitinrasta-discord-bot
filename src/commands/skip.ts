@@ -30,7 +30,7 @@ function command(message: Message, args: string[], {queue, player}: global) {
     const current_track = server_queue.songs.shift();
     const next_track = server_queue.songs[0];
     message.channel
-      .send(`Pulando de ${current_track?.title} para ${next_track?.title}`)
+      .send(`Pulando de 💽 ${current_track?.title} para 💽 ${next_track?.title}`)
       .then(message => setTimeout(() => message.delete(), 5000));
     playTrack(next_track.url, server_queue.voiceChannel, player);
     message.react('🆗');

@@ -7,12 +7,13 @@ import ping from './ping';
 import skip from './skip';
 import pause from './pause';
 import queueCmd from './queue';
+import leave from './leave';
 import {createAudioPlayer} from '@discordjs/voice';
 
 const queue = new Map<string, IQueueItem>();
 const player = createAudioPlayer();
 
-const commands = [play, ping, skip, pause, queueCmd];
+const commands = [play, ping, skip, pause, queueCmd, leave];
 
 const global = {
   queue,
