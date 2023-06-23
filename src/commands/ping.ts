@@ -7,6 +7,6 @@ export default {
   run: command,
 };
 
-function command(message: Message, args: string[]) {
+function command(message: Message) {
   message.channel.send('Pong!');
 }

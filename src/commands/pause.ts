@@ -1,5 +1,5 @@
 import {Message} from 'discord.js';
-import global from '../interfaces/global'
+import BotContext from '../interfaces/botContext'
 import { AudioPlayerStatus } from '@discordjs/voice';
 import replyMessage from '../utils/replyMessage';
 
@@ -10,7 +10,7 @@ export default {
   run: command,
 };
 
-function command(message: Message, args: string[], {queue, player}: global) {
+function command(message: Message, args: string[], {player}: BotContext) {
   if( player.state.status === AudioPlayerStatus.Playing ) {
     player.pause();
     message.react('⏸️');

@@ -8,15 +8,23 @@ import skip from './skip';
 import pause from './pause';
 import queueCmd from './queue';
 import leave from './leave';
+
 import {createAudioPlayer} from '@discordjs/voice';
 import replyMessage from '../utils/replyMessage';
+import BotContext from '../interfaces/botContext';
 
 const queue = new Map<string, IQueueItem>();
 const player = createAudioPlayer();
 
+player.on('error', error => {
+  console.error('Player error: ', error);
+  player.stop();
+});
+
+
 const commands = [play, ping, skip, pause, queueCmd, leave];
 
-const global = {
+const context : BotContext = {
   queue,
   player,
 };
@@ -43,7 +51,7 @@ export default (message: Message) => {
         cmd.name == command ||
         (cmd.aliases && cmd.aliases.includes(command))
       ) {
-        cmd.run(message, args, global);
+        cmd.run(message, args, context);
       }
     });
   }

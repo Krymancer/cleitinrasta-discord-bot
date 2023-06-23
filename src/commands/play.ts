@@ -3,7 +3,7 @@ import {
   AudioPlayerStatus
 } from '@discordjs/voice';
 import {IQueueItem} from '../interfaces/queue';
-import global from '../interfaces/global';
+import BotContext from '../interfaces/botContext';
 import getVideo from '../utils/getVideo';
 import replyMessage from '../utils/replyMessage';
 import musicPlayer from '../utils/musicPlayer';
@@ -19,7 +19,7 @@ export default {
 async function command(
   message: Message,
   args: string[],
-  {queue, player}: global
+  {queue, player}: BotContext
 ) {
   if (!args.length) {
     if (player.state.status === AudioPlayerStatus.Paused) {

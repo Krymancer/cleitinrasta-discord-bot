@@ -1,6 +1,6 @@
 import {Message} from 'discord.js';
 
-import global from '../interfaces/global';
+import BotContext from '../interfaces/botContext';
 
 export default {
   name: 'queue',
@@ -12,7 +12,7 @@ export default {
 function command(
   message: Message,
   args: string[],
-  {queue}: global
+  {queue}: BotContext
 ): void {
   const server_queue = queue.get(message.guild!.id);
 

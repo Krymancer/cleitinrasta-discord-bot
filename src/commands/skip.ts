@@ -1,5 +1,5 @@
 import {Message} from 'discord.js';
-import global from '../interfaces/global';
+import BotContext from '../interfaces/botContext';
 import playTrack from '../utils/playTrack';
 import replyMessage from '../utils/replyMessage';
 
@@ -10,7 +10,7 @@ export default {
   run: command,
 };
 
-function command(message: Message, args: string[], {queue, player}: global) {
+function command(message: Message, args: string[], {queue, player}: BotContext) {
   if (!message.member?.voice.channel) {
     replyMessage(message, 'Mas tu n ta nem num chat de voz doido!', false);
   }
