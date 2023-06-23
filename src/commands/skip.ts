@@ -28,8 +28,14 @@ function command(message: Message, args: string[], {queue, player}: global) {
 
     const current_track = server_queue.songs.shift();
     const next_track = server_queue.songs[0];
+
+    if (!next_track) {
+      replyMessage(message, 'Acabou as musicas ai cabaço 😡', true);
+      queue.delete(message.guild!.id);
+      return;
+    }
     
     replyMessage(message, `Pulando de 💽 ${current_track?.title} para 💽 ${next_track?.title}`, true);
-    playTrack(next_track.url, server_queue.voiceChannel, player);
+    playTrack(next_track.url, player);
   }
 }

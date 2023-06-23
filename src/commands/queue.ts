@@ -12,7 +12,7 @@ export default {
 function command(
   message: Message,
   args: string[],
-  {queue, player}: global
+  {queue}: global
 ): void {
   const server_queue = queue.get(message.guild!.id);
 
